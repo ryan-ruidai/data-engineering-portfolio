@@ -1,0 +1,37 @@
+{
+  "clean_events": 11,
+  "latest_payments": 7,
+  "historical_events": 4,
+  "successful_payments": 5,
+  "successful_snapshot_cents": 24500,
+  "orders": [
+    {
+      "order_id": 501,
+      "payment_count": 1,
+      "amount_cents": 8000
+    },
+    {
+      "order_id": 503,
+      "payment_count": 2,
+      "amount_cents": 7500
+    },
+    {
+      "order_id": 505,
+      "payment_count": 1,
+      "amount_cents": 9000
+    },
+    {
+      "order_id": 506,
+      "payment_count": 1,
+      "amount_cents": 0
+    }
+  ],
+  "checks": {
+    "event_balance": true,
+    "payment_balance": true,
+    "order_amount_balance": true,
+    "order_payment_balance": true
+  },
+  "rejected_rows": 0,
+  "rejection_reasons": {}
+}
