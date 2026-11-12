@@ -1,0 +1,266 @@
+{
+  "run_id": 1,
+  "generated_at": "2026-11-12T04:08:22.879245+00:00",
+  "currency": "CAD",
+  "data": "Synthetic retail demonstration",
+  "metric_contract": "Current-state capture/refund snapshots, not accounting revenue or bank settlement.",
+  "source_mode": "Full retail snapshot plus immutable event history; no as-of cutoff.",
+  "totals": {
+    "original_order_total_cents": 32000,
+    "collectible_cents": 29000,
+    "captured_cents": 27000,
+    "refunded_cents": 1000,
+    "net_payment_cents": 26000,
+    "capture_variance_cents": -2000
+  },
+  "orders": [
+    {
+      "order_id": 501,
+      "customer_id": 1,
+      "region": "ON",
+      "ordered_at": "2026-11-10 09:00:00",
+      "status": "fulfilled",
+      "currency": "CAD",
+      "line_count": 2,
+      "item_net_cents": 9000,
+      "tax_cents": 500,
+      "shipping_cents": 500,
+      "original_order_total_cents": 10000,
+      "collectible_cents": 10000,
+      "payment_count": 2,
+      "captured_cents": 10000,
+      "refunded_cents": 1000,
+      "net_payment_cents": 9000,
+      "capture_variance_cents": 0
+    },
+    {
+      "order_id": 502,
+      "customer_id": 2,
+      "region": "BC",
+      "ordered_at": "2026-11-10 09:10:00",
+      "status": "fulfilled",
+      "currency": "CAD",
+      "line_count": 1,
+      "item_net_cents": 8000,
+      "tax_cents": 0,
+      "shipping_cents": 0,
+      "original_order_total_cents": 8000,
+      "collectible_cents": 8000,
+      "payment_count": 1,
+      "captured_cents": 8000,
+      "refunded_cents": 0,
+      "net_payment_cents": 8000,
+      "capture_variance_cents": 0
+    },
+    {
+      "order_id": 503,
+      "customer_id": 1,
+      "region": "ON",
+      "ordered_at": "2026-11-10 09:20:00",
+      "status": "pending",
+      "currency": "CAD",
+      "line_count": 2,
+      "item_net_cents": 5000,
+      "tax_cents": 0,
+      "shipping_cents": 0,
+      "original_order_total_cents": 5000,
+      "collectible_cents": 5000,
+      "payment_count": 1,
+      "captured_cents": 2000,
+      "refunded_cents": 0,
+      "net_payment_cents": 2000,
+      "capture_variance_cents": -3000
+    },
+    {
+      "order_id": 504,
+      "customer_id": 3,
+      "region": "AB",
+      "ordered_at": "2026-11-10 09:30:00",
+      "status": "cancelled",
+      "currency": "CAD",
+      "line_count": 1,
+      "item_net_cents": 3000,
+      "tax_cents": 0,
+      "shipping_cents": 0,
+      "original_order_total_cents": 3000,
+      "collectible_cents": 0,
+      "payment_count": 0,
+      "captured_cents": 0,
+      "refunded_cents": 0,
+      "net_payment_cents": 0,
+      "capture_variance_cents": 0
+    },
+    {
+      "order_id": 505,
+      "customer_id": 2,
+      "region": "BC",
+      "ordered_at": "2026-11-10 09:40:00",
+      "status": "fulfilled",
+      "currency": "CAD",
+      "line_count": 1,
+      "item_net_cents": 0,
+      "tax_cents": 0,
+      "shipping_cents": 0,
+      "original_order_total_cents": 0,
+      "collectible_cents": 0,
+      "payment_count": 1,
+      "captured_cents": 0,
+      "refunded_cents": 0,
+      "net_payment_cents": 0,
+      "capture_variance_cents": 0
+    },
+    {
+      "order_id": 506,
+      "customer_id": 3,
+      "region": "AB",
+      "ordered_at": "2026-11-10 09:50:00",
+      "status": "fulfilled",
+      "currency": "CAD",
+      "line_count": 1,
+      "item_net_cents": 6000,
+      "tax_cents": 0,
+      "shipping_cents": 0,
+      "original_order_total_cents": 6000,
+      "collectible_cents": 6000,
+      "payment_count": 1,
+      "captured_cents": 7000,
+      "refunded_cents": 0,
+      "net_payment_cents": 7000,
+      "capture_variance_cents": 1000
+    }
+  ],
+  "regions": [
+    {
+      "region": "AB",
+      "orders": 2,
+      "collectible_cents": 6000,
+      "captured_cents": 7000,
+      "refunded_cents": 0,
+      "net_payment_cents": 7000
+    },
+    {
+      "region": "BC",
+      "orders": 2,
+      "collectible_cents": 8000,
+      "captured_cents": 8000,
+      "refunded_cents": 0,
+      "net_payment_cents": 8000
+    },
+    {
+      "region": "ON",
+      "orders": 2,
+      "collectible_cents": 15000,
+      "captured_cents": 12000,
+      "refunded_cents": 1000,
+      "net_payment_cents": 11000
+    }
+  ],
+  "quality_issues": [
+    {
+      "issue_type": "capture_variance",
+      "entity_id": "503",
+      "detail": "captured minus collectible: -3000 cents"
+    },
+    {
+      "issue_type": "capture_variance",
+      "entity_id": "506",
+      "detail": "captured minus collectible: 1000 cents"
+    }
+  ],
+  "batch_metrics": {
+    "payment": {
+      "input": 9,
+      "accepted": 9,
+      "duplicates": 0,
+      "rejected": 0
+    },
+    "refund": {
+      "input": 2,
+      "accepted": 2,
+      "duplicates": 0,
+      "rejected": 0
+    }
+  },
+  "payments": [
+    {
+      "event_id": 2,
+      "payment_id": "P1",
+      "order_id": 501,
+      "amount_cents": 6000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:01:00"
+    },
+    {
+      "event_id": 3,
+      "payment_id": "P2",
+      "order_id": 501,
+      "amount_cents": 4000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:02:00"
+    },
+    {
+      "event_id": 4,
+      "payment_id": "P3",
+      "order_id": 502,
+      "amount_cents": 8000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:03:00"
+    },
+    {
+      "event_id": 5,
+      "payment_id": "P4",
+      "order_id": 503,
+      "amount_cents": 2000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:04:00"
+    },
+    {
+      "event_id": 7,
+      "payment_id": "P5",
+      "order_id": 504,
+      "amount_cents": 3000,
+      "currency": "CAD",
+      "status": "voided",
+      "updated_at": "2026-11-10 10:06:00"
+    },
+    {
+      "event_id": 8,
+      "payment_id": "P6",
+      "order_id": 505,
+      "amount_cents": 0,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:07:00"
+    },
+    {
+      "event_id": 9,
+      "payment_id": "P7",
+      "order_id": 506,
+      "amount_cents": 7000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 10:08:00"
+    }
+  ],
+  "refunds": [
+    {
+      "event_id": 2,
+      "refund_id": "R1",
+      "payment_id": "P1",
+      "amount_cents": 1000,
+      "currency": "CAD",
+      "status": "succeeded",
+      "updated_at": "2026-11-10 11:01:00"
+    }
+  ],
+  "checks": {
+    "order_coverage": true,
+    "capture_conservation": true,
+    "refund_conservation": true,
+    "net_arithmetic": true
+  }
+}

@@ -1,0 +1,10 @@
+event_id,payment_id,order_id,amount_cents,currency,status,updated_at
+1,P1,501,6000,CAD,pending,2026-11-10 10:00:00
+2,P1,501,6000,CAD,succeeded,2026-11-10 10:01:00
+3,P2,501,4000,CAD,succeeded,2026-11-10 10:02:00
+4,P3,502,8000,CAD,succeeded,2026-11-10 10:03:00
+5,P4,503,2000,CAD,succeeded,2026-11-10 10:04:00
+6,P5,504,3000,CAD,succeeded,2026-11-10 10:05:00
+7,P5,504,3000,CAD,voided,2026-11-10 10:06:00
+8,P6,505,0,CAD,succeeded,2026-11-10 10:07:00
+9,P7,506,7000,CAD,succeeded,2026-11-10 10:08:00

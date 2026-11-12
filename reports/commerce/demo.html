@@ -1,0 +1,94 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Retail payment assurance</title><style>
+    body{font:16px system-ui;background:#f4f6fa;color:#17283d;margin:0;padding:40px;max-width:1180px;margin:auto}h1{font-size:38px;margin-bottom:12px}.tag{color:#446788}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:24px 0}article{background:white;padding:20px;border:1px solid #dbe4ef;border-radius:12px}small{display:block;text-transform:uppercase;font-size:11px;letter-spacing:1px}strong{display:block;font-size:28px;margin-top:12px}table{border-collapse:collapse;width:100%;background:white}td,th{text-align:right;padding:12px;border-bottom:1px solid #dbe4ef}td:first-child,th:first-child{text-align:left}.scroll{overflow:auto}li{padding:7px}footer{margin-top:30px;font-size:13px;color:#456}p{line-height:1.6}details{background:white;padding:16px;margin:12px 0;border-radius:10px}summary{cursor:pointer;font-weight:600}pre{overflow:auto;font-size:13px}</style><p class="tag">SYNTHETIC RETAIL · CAD · RUN 2</p><h1>Retail payment assurance</h1><p>From orders and line items to payment states, refunds and actionable reconciliation exceptions.</p><section><article><small>original order total</small><strong>$320.00</strong></article><article><small>collectible</small><strong>$290.00</strong></article><article><small>captured</small><strong>$290.00</strong></article><article><small>refunded</small><strong>$30.00</strong></article><article><small>net payment</small><strong>$260.00</strong></article><article><small>capture variance</small><strong>$0.00</strong></article></section><h2>Order-level reconciliation</h2><p>Capture variance compares gross captured with collectible order value. Refunds are shown separately; net payment is not revenue. Cancelled orders have zero collectible value.</p><div class="scroll"><table><thead><tr><th>Order</th><th>Status</th><th>Region</th><th>Collectible</th><th>Captured</th><th>Refunded</th><th>Net payment</th><th>Variance</th></tr></thead><tbody><tr><td>501</td><td>fulfilled</td><td>ON</td><td>$100.00</td><td>$100.00</td><td>$10.00</td><td>$90.00</td><td>$0.00</td></tr><tr><td>502</td><td>fulfilled</td><td>BC</td><td>$80.00</td><td>$80.00</td><td>$20.00</td><td>$60.00</td><td>$0.00</td></tr><tr><td>503</td><td>pending</td><td>ON</td><td>$50.00</td><td>$50.00</td><td>$0.00</td><td>$50.00</td><td>$0.00</td></tr><tr><td>504</td><td>cancelled</td><td>AB</td><td>$0.00</td><td>$0.00</td><td>$0.00</td><td>$0.00</td><td>$0.00</td></tr><tr><td>505</td><td>fulfilled</td><td>BC</td><td>$0.00</td><td>$0.00</td><td>$0.00</td><td>$0.00</td><td>$0.00</td></tr><tr><td>506</td><td>fulfilled</td><td>AB</td><td>$60.00</td><td>$60.00</td><td>$0.00</td><td>$60.00</td><td>$0.00</td></tr></tbody></table></div><h2>Exceptions for investigation</h2><ul><li>No model exceptions in this run.</li></ul><h2>Transaction drilldown</h2><details><summary>Payments · latest accepted state</summary><pre>[
+  {
+    &quot;event_id&quot;: 2,
+    &quot;payment_id&quot;: &quot;P1&quot;,
+    &quot;order_id&quot;: 501,
+    &quot;amount_cents&quot;: 6000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:01:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 3,
+    &quot;payment_id&quot;: &quot;P2&quot;,
+    &quot;order_id&quot;: 501,
+    &quot;amount_cents&quot;: 4000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:02:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 4,
+    &quot;payment_id&quot;: &quot;P3&quot;,
+    &quot;order_id&quot;: 502,
+    &quot;amount_cents&quot;: 8000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:03:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 5,
+    &quot;payment_id&quot;: &quot;P4&quot;,
+    &quot;order_id&quot;: 503,
+    &quot;amount_cents&quot;: 2000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:04:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 7,
+    &quot;payment_id&quot;: &quot;P5&quot;,
+    &quot;order_id&quot;: 504,
+    &quot;amount_cents&quot;: 3000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;voided&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:06:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 8,
+    &quot;payment_id&quot;: &quot;P6&quot;,
+    &quot;order_id&quot;: 505,
+    &quot;amount_cents&quot;: 0,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 10:07:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 12,
+    &quot;payment_id&quot;: &quot;P7&quot;,
+    &quot;order_id&quot;: 506,
+    &quot;amount_cents&quot;: 6000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-11 10:01:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 11,
+    &quot;payment_id&quot;: &quot;P8&quot;,
+    &quot;order_id&quot;: 503,
+    &quot;amount_cents&quot;: 3000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-11 10:00:00&quot;
+  }
+]</pre></details><details><summary>Refunds · latest accepted state</summary><pre>[
+  {
+    &quot;event_id&quot;: 2,
+    &quot;refund_id&quot;: &quot;R1&quot;,
+    &quot;payment_id&quot;: &quot;P1&quot;,
+    &quot;amount_cents&quot;: 1000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-10 11:01:00&quot;
+  },
+  {
+    &quot;event_id&quot;: 3,
+    &quot;refund_id&quot;: &quot;R2&quot;,
+    &quot;payment_id&quot;: &quot;P3&quot;,
+    &quot;amount_cents&quot;: 2000,
+    &quot;currency&quot;: &quot;CAD&quot;,
+    &quot;status&quot;: &quot;succeeded&quot;,
+    &quot;updated_at&quot;: &quot;2026-11-11 11:00:00&quot;
+  }
+]</pre></details><footer>Generated 2026-11-12T04:08:22.883971+00:00. Fictional full retail snapshot + processor event CSV exports. Conservation checks passed. No bank settlement feed, accounting revenue recognition, FX, or production deployment is represented.</footer></html>

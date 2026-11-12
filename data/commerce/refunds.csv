@@ -1,0 +1,3 @@
+event_id,refund_id,payment_id,amount_cents,currency,status,updated_at
+1,R1,P1,1000,CAD,pending,2026-11-10 11:00:00
+2,R1,P1,1000,CAD,succeeded,2026-11-10 11:01:00

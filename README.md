@@ -1,49 +1,76 @@
-# Payment snapshot data pipeline
+# Retail payment assurance · data engineering portfolio
 
-**A runnable data-engineering portfolio using synthetic data. Not production experience, an official interview problem, or an accounting system.**
+A reproducible **multi-table, multi-source retail ETL project** with synthetic business data, executable validation, payment/refund state reconstruction, cross-source reconciliation and a generated reporting layer.
 
-## What an interviewer can inspect
-A complete small local batch path: raw ingestion → validation/quarantine → accepted events → latest payment states → order-level mart → reconciliation checks → HTML report. It includes replay-safe ingestion, late event handling, lineage, tests and a CI workflow. It does not claim enterprise-scale deployment.
+**Start here:** [architecture & model](docs/commerce/architecture.md) · [business contracts](docs/commerce/contracts.md) · [operating runbook](docs/commerce/runbook.md) · [interviewer walkthrough](docs/commerce/interviewer.md) · [example report](reports/commerce/demo.html) · [report JSON](reports/commerce/demo.json)
 
-[Architecture and contracts](docs/architecture.md) · [Deployment boundary](docs/deployment.md) · [Sample report HTML](reports/demo.html) · [Machine-readable sample](reports/demo.json)
+This is a local reference implementation, not a production deployment or accounting system. All customers, transactions and source systems are fictional. No real personal or company data is included.
 
-Download/open `reports/demo.html` to view the sample; GitHub source pages do not render HTML as a website. Generate your own with the commands below.
+## The business problem
 
-## Run in three commands
-Requires Python 3.9+ and SQLite 3.25+. No dependencies, account, secret, cloud resource or existing database required. Run from the project root:
+An order can contain multiple items and be funded by multiple payments. A payment may change state after its first arrival, and partial refunds arrive independently. Joining every detail row together inflates totals; filtering successes before choosing the latest payment state retains voided payments. This project makes those errors testable and exposes order/payment discrepancies for investigation.
+
+```mermaid
+flowchart LR
+  A[Retail source SQLite\ncustomers · products · orders · order_items] --> C[Consistent full snapshot]
+  B[Processor CSV exports\npayment events · refund events] --> D[Validate · deduplicate · quarantine]
+  C --> E[Raw lineage + silver entities]
+  D --> E
+  E --> F[Latest payment / refund state]
+  F --> G[Order-grain reconciliation mart]
+  E --> G
+  G --> H[Quality exceptions + region rollup]
+  H --> I[Versioned HTML / JSON report]
+  J[Durable run audit] --- E
+```
+
+## Reproduce the full project
+
+Requires **Python 3.9+ and SQLite 3.25+**. No packages, credentials, cloud account or paid service required. From the repository root:
 
 ```sh
 python3 -m unittest discover -s tests -v
-python3 -m pipeline.run
-python3 -m pipeline.run
+python3 -m commerce.run                   # generate fictional sources, ingest base batch
+python3 -m commerce.run                   # replay: no duplicate business facts
+python3 -m commerce.run --batch late      # late event, balance payment, correction, refund
+python3 -m commerce.run --batch late      # replay delta, unchanged business results
 ```
 
-Open `build/report.html`. First run inserts 11 events. Replay inserts 0 and records 11 duplicates; business state is unchanged. Each completed batch is logged; failed transactions roll back and exit nonzero without a durable run record. Inputs stay untouched; generated SQLite/output files live under ignored `build/`.
+Each run prints its report path under ignored `build/commerce/reports/run-N/report.html`. `latest.json` points to the last completely exported bundle. Open HTML locally; GitHub's file browser displays source, not a hosted dashboard.
 
-Expected base fixture: **11 events → 7 latest payments → 5 successful payments → 4 orders**, **CAD 245.00 current successful payment snapshot amount**. This is **not revenue, profit or cash settlement**. Orders 501/503/505/506 have 80.00/75.00/90.00/0.00 respectively.
+| Verified synthetic scenario | Collectible orders | Current captures | Current successful refunds | Net payment snapshot |
+|---|---:|---:|---:|---:|
+| Base batch | CAD 290.00 | CAD 270.00 | CAD 10.00 | CAD 260.00 |
+| After late batch | CAD 290.00 | CAD 290.00 | CAD 30.00 | CAD 260.00 |
 
-## Correctness that matters
-- Select latest state across **all** statuses before filtering succeeded. A later voided state must remove an earlier success.
-- Latest is UTC `updated_at DESC, event_id DESC`; ID tie-break is an exercise contract.
-- Partition by payment, aggregate by order; retain zero amounts and multiple payments per order.
-- Exact integer cents in the operational pipeline. No floating-point monetary aggregation.
-- Validate before accepting; keep malformed/conflicting records with reasons and source lineage.
-- Late older events remain history; late newer events update the snapshot. No arrival-time watermark loses them.
+Base has two expected order discrepancies: order 503 is under-captured by CAD 30; order 506 is over-captured by CAD 10. The late batch resolves both. Refunds **do not reduce original order value**. Net payment is **not accounting revenue, profit, or bank-settled cash**.
 
-## Verified boundaries
-Local 19-test suite passes on Python 3.9 / SQLite. Tests cover expected rows, ties, amount corrections, zero values, early-filter negative control, replay, late states, invalid records and exact cents. The checked-in GitHub Actions workflow is not a claim of a completed remote CI run.
+## Implemented capabilities
 
-`sql/` preserves the MySQL-oriented SQL reference. Its logic tests run in isolated SQLite; **whole-project MySQL integration and MySQL DECIMAL/constraint behavior remain unverified**. The Python ETL is SQLite-only.
+- **Six business entities**: customers, products, orders, order items, payments and refunds. Database snapshot extraction and CSV event ingestion are both executed.
+- **Raw / silver / gold separation** with source content hashes, raw payloads, row lineage and per-run metrics.
+- **Full master/order refresh** with an explicit source contract; immutable financial events with replay detection and conflict quarantine.
+- **Late-arriving event handling**, deterministic ties and latest-state selection before business filtering.
+- **Exact integer-cent calculations**, separate order/payment/refund aggregation, cancelled-order policy, zero payments and split payments.
+- **Cross-source order/payment reconciliation**, refund-exposure alerts, conservation invariants, and actionable exceptions. This is not independent bank reconciliation.
+- **Transactional batch writes**, durable failed-run audit, atomic publication of a pointer to matching HTML/JSON report bundles.
+- **48 local tests** covering positive cases, negative controls, malformed data, orphan retry, source refresh, failure rollback, report consistency and both pipelines. GitHub Actions runs tests and replay scenarios; remote CI status must be checked for the specific commit.
 
-## Layout
-- `pipeline/`: executable ingestion, validation, marts, report generator
-- `data/synthetic/`: original synthetic input
-- `sql/`: reference SQL solution and view refactor
-- `tests/`: isolated logic and ingestion tests
-- `reports/`: generated synthetic example (not personal runtime state)
-- `.github/workflows/ci.yml`: automated checks
-- `docs/`: architecture, limitations, interviewer guide and verification roadmap
+## Repository map
 
-## Honest scope
-Single-machine batch prototype; no benchmark, cloud deployment, source order dimension, independent bank reconciliation, refunds or multicurrency. First accepted conflicting event wins and is flagged for investigation. Failure transactions roll back and exit nonzero but need external failure monitoring. Review [operating limitations](docs/architecture.md) before adapting this to a real system.
+| Path | Purpose |
+|---|---|
+| `commerce/fixtures.py` | Reproducible source DB, base and late event export generator |
+| `commerce/run.py` | Extraction, validation, quarantine, audit, transform and report orchestration |
+| `sql/commerce/marts.sql` | Latest-state views and order-grain reconciliation SQL |
+| `tests/test_commerce.py` | Multi-source integration and failure-path tests |
+| `data/commerce/` | Inspectable fictional CSV examples and generation contract |
+| `reports/commerce/` | Generated base/late examples |
+| `docs/commerce/` | Contracts, architecture, operations and interview walkthrough |
+| `pipeline/`, `sql/0*.sql`, `sql/payment_snapshot.sql` | Original focused payment-snapshot module, retained as a smaller reference |
 
+The earlier module remains runnable with `python3 -m pipeline.run`. Its dataset and totals are **different** from the retail project; see [its original scope](docs/architecture.md).
+
+## Deliberate boundaries
+
+SQLite batch execution only. No CDC, SCD2, streaming, FX, accounting revenue recognition, bank settlement feed, source API, access-control system or cloud deployment is claimed. Full snapshot extraction trades scalability for reproducibility. There is no performance benchmark. The original MySQL-style reference has not been end-to-end verified against a MySQL server. [Deployment considerations](docs/deployment.md) are planning material, not a deployed cloud environment.
