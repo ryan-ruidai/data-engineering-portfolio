@@ -20,3 +20,4 @@ jobs:
       - run: python -m commerce.run
       - run: python -m commerce.run --batch late
       - run: python -m commerce.run --batch late
+      - run: python -m commerce.recover --warehouse build/commerce/warehouse.sqlite --run-id 4 --out build/commerce/reports

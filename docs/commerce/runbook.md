@@ -36,20 +36,17 @@ SELECT payment_id, first_run, source_line FROM silver_payment_events ORDER BY ev
 - Export error: the database run remains succeeded, export_status becomes failed. Previous latest.json remains unchanged. Persisted report_json allows regenerating the exact committed report without rerunning source ingestion.
 - Process termination/power loss: SQLite transaction recovery protects writes, but a previously inserted run may remain `running`; no watchdog claims to repair it. Investigate before starting another writer.
 
-To retry an export from its committed report (replace N with an actual succeeded run ID):
+## Recover an export without ingesting again
 
-```python
-import json
-from commerce.run import connect, export_report
-connection = connect('build/commerce/warehouse.sqlite')
-row = connection.execute("SELECT report_json FROM ops_runs WHERE run_id=? AND status='succeeded'", (N,)).fetchone()
-if row is None:
-    raise ValueError('No committed successful report for that run')
-export_report(connection, json.loads(row[0]), 'build/commerce/reports')
-connection.close()
+For the newest successful database run, use the persisted report rather than live views:
+
+```sh
+python3 -m commerce.recover --warehouse build/commerce/warehouse.sqlite --run-id N --out build/commerce/reports
 ```
 
-Export retry uses the persisted report, not current views. Retrying an older run intentionally changes latest.json to that run; choose the intended latest successful run. Do not edit report values by hand.
+Replace N with the latest succeeded run ID from `ops_runs`. This command does not read source files, insert a run, or change financial facts. It exports the exact committed JSON and updates only export status. Missing/failed runs and older successful runs are rejected before publication, preventing accidental rollback of the latest pointer. No warehouse is created if the path does not exist. An export failure remains marked failed and can be retried.
+
+Run only when ingestion and other exporters are idle. This is a single-writer local workflow, not distributed locking or disaster recovery. Keep the warehouse and source backups; this command cannot recover lost database data.
 
 ## Deployment boundary
 

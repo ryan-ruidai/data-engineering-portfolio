@@ -147,6 +147,56 @@ class CommerceTests(unittest.TestCase):
         self.assertIn('RUN '+str(pointer['run_id']),(out/pointer['report']).read_text())
         self.assertEqual(json.loads((out/('run-'+str(pointer['run_id']))/'report.json').read_text())['run_id'],pointer['run_id'])
         self.assertEqual(self.sql('SELECT export_status FROM ops_runs'),[('exported',),('failed',),('exported',)])
+    def test_recover_export_uses_persisted_snapshot_without_ingestion(self):
+        from commerce.recover import recover
+        first = self.execute()
+        self.change_source("UPDATE customers SET region='NS' WHERE customer_id=1")
+        (self.source.parent/'payments.csv').write_text('unavailable source')
+        report = recover(self.db, first['run_id'], self.root/'recovered')
+        self.assertEqual(report, first)
+        self.assertEqual(self.sql('SELECT COUNT(*) FROM ops_runs'), [(1,)])
+        self.assertEqual(self.sql('SELECT COUNT(*) FROM silver_payment_events'), [(9,)])
+        self.assertEqual(self.sql('SELECT export_status FROM ops_runs'), [('exported',)])
+
+    def test_recover_rejects_old_run_without_changing_pointer(self):
+        from commerce.recover import recover
+        out = self.root/'reports'
+        first = self.execute(out=out)
+        latest = self.execute(late=True, out=out)
+        before = (out/'latest.json').read_bytes()
+        with self.assertRaisesRegex(ValueError, 'refuse_to_publish_older_run'):
+            recover(self.db, first['run_id'], out)
+        self.assertEqual((out/'latest.json').read_bytes(), before)
+        self.assertEqual(json.loads(before)['run_id'], latest['run_id'])
+
+    def test_recover_rejects_failed_and_missing_runs(self):
+        from commerce.recover import recover
+        with self.assertRaises(RuntimeError):
+            self.execute(fail_at='after_ingest')
+        for run_id in (1, 999):
+            with self.assertRaisesRegex(ValueError, 'run_has_no_committed_report'):
+                recover(self.db, run_id, self.root/'reports')
+        self.assertFalse((self.root/'reports').exists())
+
+    def test_recover_missing_warehouse_does_not_create_it(self):
+        from commerce.recover import recover
+        missing = self.root/'missing.sqlite'
+        with self.assertRaises(FileNotFoundError):
+            recover(missing, 1, self.root/'reports')
+        self.assertFalse(missing.exists())
+
+    def test_recover_failure_then_retry_preserves_exact_report(self):
+        from commerce.recover import recover
+        first = self.execute()
+        blocker = self.root/'file'; blocker.write_text('not a directory')
+        with self.assertRaises(FileExistsError):
+            recover(self.db, first['run_id'], blocker)
+        self.assertEqual(self.sql('SELECT status, export_status FROM ops_runs'), [('succeeded', 'failed')])
+        out = self.root/'reports'
+        self.assertEqual(recover(self.db, first['run_id'], out), first)
+        self.assertEqual(json.loads((out/'run-1/report.json').read_text()), first)
+        self.assertEqual(self.sql('SELECT status, export_status FROM ops_runs'), [('succeeded', 'exported')])
+
     def test_regional_rollup_conserves_totals(self):
         r=self.execute()
         self.assertEqual(sum(x['captured_cents'] for x in r['regions']),r['totals']['captured_cents'])

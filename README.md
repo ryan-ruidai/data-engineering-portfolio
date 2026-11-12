@@ -53,8 +53,9 @@ Base has two expected order discrepancies: order 503 is under-captured by CAD 30
 - **Late-arriving event handling**, deterministic ties and latest-state selection before business filtering.
 - **Exact integer-cent calculations**, separate order/payment/refund aggregation, cancelled-order policy, zero payments and split payments.
 - **Cross-source order/payment reconciliation**, refund-exposure alerts, conservation invariants, and actionable exceptions. This is not independent bank reconciliation.
+- **Committed-report recovery CLI** republishes the newest successful snapshot without source access or re-ingestion, with stale-run protection and failure/retry tests.
 - **Transactional batch writes**, durable failed-run audit, atomic publication of a pointer to matching HTML/JSON report bundles.
-- **48 local tests** covering positive cases, negative controls, malformed data, orphan retry, source refresh, failure rollback, report consistency and both pipelines. GitHub Actions runs tests and replay scenarios; remote CI status must be checked for the specific commit.
+- **53 local tests** covering positive cases, negative controls, malformed data, orphan retry, source refresh, failure rollback, report consistency and both pipelines. GitHub Actions runs tests and replay scenarios; remote CI status must be checked for the specific commit.
 
 ## Repository map
 
