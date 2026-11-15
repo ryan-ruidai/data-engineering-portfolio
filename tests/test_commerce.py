@@ -200,6 +200,34 @@ class CommerceTests(unittest.TestCase):
     def test_regional_rollup_conserves_totals(self):
         r=self.execute()
         self.assertEqual(sum(x['captured_cents'] for x in r['regions']),r['totals']['captured_cents'])
+    def test_all_region_metrics_reconcile_after_late_events(self):
+        self.execute()
+        report = self.execute(late=True)
+        self.assertEqual(sum(row['orders'] for row in report['regions']), len(report['orders']))
+        for metric in ('collectible_cents', 'captured_cents', 'refunded_cents', 'net_payment_cents'):
+            with self.subTest(metric=metric):
+                self.assertEqual(sum(row[metric] for row in report['regions']), report['totals'][metric])
+
+    def test_region_change_reclassifies_snapshot_not_cashflow(self):
+        before = self.execute()
+        self.change_source("UPDATE customers SET region='NS' WHERE customer_id=1")
+        after = self.execute()
+        self.assertEqual(after['totals'], before['totals'])
+        before_region = next(row for row in before['regions'] if row['region'] == 'ON')
+        after_region = next(row for row in after['regions'] if row['region'] == 'NS')
+        self.assertEqual({k: v for k, v in before_region.items() if k != 'region'},
+                         {k: v for k, v in after_region.items() if k != 'region'})
+        self.assertNotIn('ON', [row['region'] for row in after['regions']])
+
+    def test_refund_changes_net_not_order_value_or_capture_variance(self):
+        before = self.execute()
+        self.add('refund', [(20, 'R_EXTRA', 'P1', 500, 'CAD', 'succeeded', '2026-11-12 12:00:00')])
+        after = self.execute()
+        for metric in ('original_order_total_cents', 'collectible_cents', 'captured_cents', 'capture_variance_cents'):
+            self.assertEqual(after['totals'][metric], before['totals'][metric])
+        self.assertEqual(after['totals']['refunded_cents'], before['totals']['refunded_cents'] + 500)
+        self.assertEqual(after['totals']['net_payment_cents'], before['totals']['net_payment_cents'] - 500)
+
     def test_inputs_not_modified(self):
         before=self.source.read_bytes(); self.execute(); self.assertEqual(before,self.source.read_bytes())
 

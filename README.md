@@ -2,7 +2,7 @@
 
 A reproducible **multi-table, multi-source retail ETL project** with synthetic business data, executable validation, payment/refund state reconstruction, cross-source reconciliation and a generated reporting layer.
 
-**Start here:** [architecture & model](docs/commerce/architecture.md) · [business contracts](docs/commerce/contracts.md) · [operating runbook](docs/commerce/runbook.md) · [interviewer walkthrough](docs/commerce/interviewer.md) · [example report](reports/commerce/demo.html) · [report JSON](reports/commerce/demo.json)
+**Start here:** [architecture & model](docs/commerce/architecture.md) · [business contracts](docs/commerce/contracts.md) · [metric catalog](docs/commerce/metrics.md) · [operating runbook](docs/commerce/runbook.md) · [interviewer walkthrough](docs/commerce/interviewer.md) · [example report](reports/commerce/demo.html) · [report JSON](reports/commerce/demo.json)
 
 This is a local reference implementation, not a production deployment or accounting system. All customers, transactions and source systems are fictional. No real personal or company data is included.
 
@@ -55,7 +55,7 @@ Base has two expected order discrepancies: order 503 is under-captured by CAD 30
 - **Cross-source order/payment reconciliation**, refund-exposure alerts, conservation invariants, and actionable exceptions. This is not independent bank reconciliation.
 - **Committed-report recovery CLI** republishes the newest successful snapshot without source access or re-ingestion, with stale-run protection and failure/retry tests.
 - **Transactional batch writes**, durable failed-run audit, atomic publication of a pointer to matching HTML/JSON report bundles.
-- **53 local tests** covering positive cases, negative controls, malformed data, orphan retry, source refresh, failure rollback, report consistency and both pipelines. GitHub Actions runs tests and replay scenarios; remote CI status must be checked for the specific commit.
+- **56 local tests** covering positive cases, negative controls, malformed data, orphan retry, source refresh, failure rollback, report consistency and both pipelines. GitHub Actions runs tests and replay scenarios; remote CI status must be checked for the specific commit.
 
 ## Repository map
 
