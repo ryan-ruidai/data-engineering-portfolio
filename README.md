@@ -72,6 +72,10 @@ Base has two expected order discrepancies: order 503 is under-captured by CAD 30
 
 The earlier module remains runnable with `python3 -m pipeline.run`. Its dataset and totals are **different** from the retail project; see [its original scope](docs/architecture.md).
 
+## Small CSV object adapter
+
+[CSV catalog example](examples/csv_catalog/README.md): 100 fictional stock records, a `Product` class, an English-commented CSV loader and five focused tests. This standalone example does not alter the commerce pipeline.
+
 ## Deliberate boundaries
 
 SQLite batch execution only. No CDC, SCD2, streaming, FX, accounting revenue recognition, bank settlement feed, source API, access-control system or cloud deployment is claimed. Full snapshot extraction trades scalability for reproducibility. There is no performance benchmark. The original MySQL-style reference has not been end-to-end verified against a MySQL server. [Deployment considerations](docs/deployment.md) are planning material, not a deployed cloud environment.
